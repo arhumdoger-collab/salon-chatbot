@@ -6,9 +6,10 @@ from supabase import create_client, Client
 from dotenv import load_dotenv
 import os, re, json, uuid
 from openai import OpenAI
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 load_dotenv()
+
 
 groq_api_key = os.getenv("GROQ_API_KEY")
 supabase_url = os.getenv("SUPABASE_URL")
@@ -231,7 +232,7 @@ def parse_barber_timing(timing_str):
 # FRESH DATA
 # ============================================================
 def get_fresh_data():
-    now=datetime.now(); today_name=now.strftime("%A"); today_date=now.strftime("%d %B %Y")
+    now=datetime.now(timezone.utc) + timedelta(hours=5); today_name=now.strftime("%A"); today_date=now.strftime("%d %B %Y")
     barbers_data=supabase.table("barbers").select("*").execute().data or []
     services_data=supabase.table("barber_services").select("*, barbers(name)").execute().data or []
     available_today=[]; off_today=[]; barber_details=[]
